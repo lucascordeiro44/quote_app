@@ -19,11 +19,23 @@ class _QuotesPageState extends State<QuotesPage> {
   void initState() {
     super.initState();
     _bloc.add(GetQuotesEvent());
+    _bloc.listController.addListener(_loadMore);
+  }
+
+  _loadMore() {
+    if (_bloc.listController.offset >= _bloc.listController.position.maxScrollExtent) {
+      setState(() {
+        _bloc.add(LoadMoreQuotesEvent());
+      });
+
+     
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(title: const Text("Quotes Page")),
         body: BlocBuilder<QuotesBloc, QuoteState>(
           builder: (context, state) {
@@ -37,14 +49,19 @@ class _QuotesPageState extends State<QuotesPage> {
               return const Center(child: CircularProgressIndicator());
             }
 
+             if (state is LoadingMore) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
             if (state is Success) {
               return ListView.builder(
+                controller: _bloc.listController,
                 itemCount: state.quotes.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(state.quotes[index].author ?? "Empty"),
-                    subtitle: Text(state.quotes[index].content ?? "Empty"),
-                  );
+                  if (state is LoadingMore) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  return _itemCard(state, index);
                 },
               );
             } else {
@@ -55,5 +72,24 @@ class _QuotesPageState extends State<QuotesPage> {
           },
           bloc: _bloc,
         ));
+  }
+
+  _itemCard(Success state, int index) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListTile(
+            title: Text(state.quotes[index].author ?? "Empty"),
+            subtitle: Text(state.quotes[index].content ?? "Empty"),
+          ),
+        ),
+      ),
+    );
   }
 }

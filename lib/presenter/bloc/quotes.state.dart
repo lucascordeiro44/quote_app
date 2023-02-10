@@ -12,6 +12,10 @@ class Loading extends QuoteState {
 
 }
 
+class LoadingMore extends QuoteState {
+
+}
+
 class Success extends QuoteState {
   final List<Quote> quotes;
   const Success({required this.quotes});

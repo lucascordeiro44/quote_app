@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Number Trivia',
+      title: 'Quotes App',
       theme: ThemeData(
         primaryColor: Colors.green.shade800,
         colorScheme:

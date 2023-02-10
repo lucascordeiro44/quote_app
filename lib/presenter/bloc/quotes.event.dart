@@ -6,3 +6,7 @@ abstract class QuoteEvent {
 
 class GetQuotesEvent extends QuoteEvent {
 }
+
+
+class LoadMoreQuotesEvent extends QuoteEvent {
+}
