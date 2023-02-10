@@ -3,16 +3,16 @@ import 'package:quote_app/domain/entities/quote.dart';
 import 'package:http/http.dart' as http;
 
 abstract class IQuotesDatasource {
-  Future<List<Quote>> getQuotes(int page, int limit);
+  Future<ResultApi> getQuotes(int page, int limit);
 }
 
-class QuotesDatasource implements IQuotesDatasource {
+class QuotesDatasourceImpl implements IQuotesDatasource {
   final http.Client client;
 
-  QuotesDatasource(this.client);
-  
+  QuotesDatasourceImpl({required this.client});
+
   @override
-  Future<List<Quote>> getQuotes(int page, int limit) async {
+  Future<ResultApi> getQuotes(int page, int limit) async {
     try {
       final response = await http
           .get(Uri.parse("https://quotable.io/quotes?page=$page&limit=$limit"));
@@ -25,11 +25,18 @@ class QuotesDatasource implements IQuotesDatasource {
               (e) => Quote.fromJson(e),
             )
             .toList();
-        return quotes;
+        return ResultApi(quotes: quotes, totalPages: totalPages);
       }
       throw Exception('Failed to load quotes');
     } catch (e) {
       throw Exception(e);
     }
   }
+}
+
+class ResultApi {
+  int totalPages;
+  List<Quote> quotes;
+
+  ResultApi({required this.quotes, required this.totalPages});
 }
